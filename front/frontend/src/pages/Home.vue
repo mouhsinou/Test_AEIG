@@ -1,5 +1,12 @@
 <template>
     <div class="home">
+        <!-- Ajout d'un en-tête pour le bouton de déconnexion -->
+        <header v-if="authStore.isAuthenticated" class="logout-header">
+            <button @click="logout" class="btn-icon logout-btn" title="Se déconnecter">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        </header>
+
         <!-- Hero Section -->
         <section class="hero-section d-flex justify-content-center align-items-center text-center">
             <div class="container">
@@ -11,15 +18,15 @@
                     <p v-if="authStore.isAuthenticated" class="welcome-msg text-white">Bienvenue {{ authStore.user?.username }} !</p>
                     <div v-if="authStore.isAuthenticated">
                         <router-link to="/dashboard" class="btn btn-success btn-lg me-3">Commencer</router-link>
-                        <button @click="logout" class="btn btn-danger btn-lg">Se déconnecter</button>
                     </div>
                 </div>
             </div>
         </section>
+
         <!-- Features Section -->
         <section class="features-section py-5">
             <div class="container">
-                <h2 class="text-center mb-5">Pourquoi nous choisir ?</h2>
+                <h2 class="text-center mb-5">Avec cette plateforme ?</h2>
                 <div class="row">
                     <div class="col-md-4 mb-4">
                         <div class="card h-100">
@@ -88,11 +95,35 @@ export default {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    position: relative;  /* Ajouté pour le positionnement du bouton de déconnexion */
+}
+
+.logout-header {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+}
+
+.btn-icon {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-icon:hover {
+    background-color: rgba(255, 255, 255, 0.2);
 }
 
 .hero-section {
     flex: 1;
-    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('@/assets/OIP.jpeg') no-repeat center center;
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+                url('@/assets/OIP.jpeg') no-repeat center center;
     background-size: cover;
     color: #ffffff;
     padding: 4rem 0;
