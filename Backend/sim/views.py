@@ -67,3 +67,131 @@ def register(request):
         return JsonResponse({'error': errors}, status=400)
 
 
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Tache, Permission
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+from .models import Tache  # Assurez-vous que le modèle Tache est bien importé
+
+from django.db.models import Q
+
+@login_required
+def dashboard(request):
+    # Récupérer toutes les tâches créées par l'utilisateur actuel
+    taches_creees = Tache.objects.filter(createur=request.user)
+    
+    # Tâches assignées à l'utilisateur
+    taches_assignees = Tache.objects.filter(utilisateurs=request.user)
+
+    # Tâches terminées créées par l'utilisateur ou lui étant assignées (en éliminant les doublons)
+    taches_terminees = Tache.objects.filter(
+        Q(createur=request.user) | Q(utilisateurs=request.user),
+        est_terminee=True
+    ).distinct()
+
+    # Tâches non terminées créées par l'utilisateur ou lui étant assignées (en éliminant les doublons)
+    taches_en_cours = Tache.objects.filter(
+        Q(createur=request.user) | Q(utilisateurs=request.user),
+        est_terminee=False
+    ).distinct()
+
+    utilisateurs = User.objects.all()
+    taches = Tache.objects.all()
+
+    context = {
+        'utilisateurs': utilisateurs,
+        'taches_creees': taches_creees,
+        'taches_assignees': taches_assignees,
+        'taches_terminees': taches_terminees,
+        'taches_en_cours': taches_en_cours,
+        'taches': taches
+    }
+
+    return render(request, 'dashboard.html', context)
+
+
+@login_required
+def creer_tache(request):
+    if request.method == 'POST':
+        if request.user.permission.peut_ajouter_tache:
+            titre = request.POST['titre']
+            description = request.POST['description']
+            utilisateurs_assignes_ids = request.POST.getlist('utilisateurs_assignes')
+            tache = Tache.objects.create(titre=titre, description=description, createur=request.user)
+            tache.utilisateurs.set(utilisateurs_assignes_ids)
+            return redirect('dashboard')
+    return redirect('dashboard')  # Redirige si l'utilisateur n'a pas la permission
+
+@login_required
+def modifier_tache(request, tache_id):
+    tache = get_object_or_404(Tache, id=tache_id)
+    if request.method == 'POST':
+        if request.user.permission.peut_modifier_tache:
+            tache.titre = request.POST['titre']
+            tache.description = request.POST['description']
+            tache.utilisateurs.set(request.POST.getlist('utilisateurs_assignes'))
+            tache.save()
+            return redirect('dashboard')
+    return redirect('dashboard')  
+
+@login_required
+def supprimer_tache(request, tache_id):
+    tache = get_object_or_404(Tache, id=tache_id)
+    if request.user.permission.peut_supprimer_tache:
+        tache.delete()
+    return redirect('dashboard')
+
+
+@login_required
+def gerer_permissions(request):
+    if request.method == 'POST':
+        utilisateur_id = request.POST['utilisateur_id']
+        utilisateur = User.objects.get(id=utilisateur_id)
+        permission, created = Permission.objects.get_or_create(utilisateur=utilisateur)
+
+        permission.peut_ajouter_tache = 'peut_ajouter_tache' in request.POST
+        permission.peut_modifier_tache = 'peut_modifier_tache' in request.POST
+        permission.peut_supprimer_tache = 'peut_supprimer_tache' in request.POST
+        permission.peut_marquer_tache_terminee = 'peut_marquer_tache_terminee' in request.POST
+        permission.save()
+
+        return redirect('dashboard')
+
+
+@login_required
+def marquer_tache_terminee(request, tache_id):
+    # Récupérer la tâche par son ID
+    tache = get_object_or_404(Tache, id=tache_id)
+
+   
+    if request.user.permission.peut_marquer_tache_terminee:
+        tache.est_terminee = True  # Marquer la tâche comme terminée
+        tache.date_fin = timezone.now()  # Enregistrer la date de fin
+        tache.save()  # Sauvegarder les changements
+        # Rediriger vers le tableau de bord
+        return redirect('dashboard')
+
+   
+    return redirect('dashboard') 
+
+
+from django.views.generic import UpdateView
+from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from .models import Tache
+from .forms import TacheForm 
+
+class ModifierTacheView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Tache
+    form_class = TacheForm
+    template_name = 'modifier_tache.html'
+    success_url = reverse_lazy('dashboard') 
+
+    def test_func(self):
+        # Vérifie si l'utilisateur a la permission de modifier la tâche
+        tache = self.get_object()
+        return self.request.user.permission.peut_modifier_tache

@@ -13,3 +13,10 @@ class CreateUserForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+from .models import Tache
+
+class TacheForm(forms.ModelForm):
+    class Meta:
+        model = Tache
+        fields = ['titre', 'description', 'utilisateurs']

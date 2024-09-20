@@ -13,11 +13,11 @@
                 <h1 class="display-3">Bienvenue sur notre plateforme</h1>
                 <p class="lead">Découvrez une nouvelle façon de collaborer et gérer vos projets en toute simplicité.</p>
                 <div class="mt-5">
-                    <router-link v-if="!authStore.isAuthenticated" to="/signup" class="btn btn-primary btn-lg me-3">S'inscrire</router-link>
+                    <router-link v-if="!authStore.isAuthenticated" to="/register" class="btn btn-primary btn-lg me-3">S'inscrire</router-link>
                     <router-link v-if="!authStore.isAuthenticated" to="/login" class="btn btn-outline-light btn-lg">Se connecter</router-link>
                     <p v-if="authStore.isAuthenticated" class="welcome-msg text-white">Bienvenue {{ authStore.user?.username }} !</p>
                     <div v-if="authStore.isAuthenticated">
-                        <router-link to="/dashboard" class="btn btn-success btn-lg me-3">Commencer</router-link>
+                        <a href="http://localhost:8000/dashboard/" style="text-decoration: none; color :green ">Commencer</a>
                     </div>
                 </div>
             </div>
@@ -26,7 +26,7 @@
         <!-- Features Section -->
         <section class="features-section py-5">
             <div class="container">
-                <h2 class="text-center mb-5">Avec cette plateforme ?</h2>
+                <h2 class="text-center mb-5">Cette plateforme vous failite : </h2>
                 <div class="row">
                     <div class="col-md-4 mb-4">
                         <div class="card h-100">

@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau de Bord</title>
+    <button @click="logout" class="btn-icon logout-btn" title="Se déconnecter">
+        <i class="fas fa-sign-out-alt"></i>
+    </button>
+
+    <!-- Materialize CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <style>
+        /* Style Soft UI */
+        body {
+            background-color: #f2f5f9;
+            font-family: 'Roboto', sans-serif;
+            color: #2f3640;
+        }
+
+        header {
+            background-color: #3498db;
+            color: white;
+            padding: 30px;
+            box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.15);
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        header h1 i {
+            margin-right: 10px;
+        }
+
+        nav a {
+            color: #ff7675;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        /* Style général pour les sections */
+        main {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        h2 {
+            font-size: 1.7rem;
+            margin-bottom: 25px;
+            color: #2d3436;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+        }
+
+        h2 i {
+            margin-right: 10px;
+        }
+
+        /* Soft UI Cards */
+        .soft-card {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0px 10px 30px rgba(100, 100, 111, 0.2);
+            padding: 25px;
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+            margin-bottom: 30px;
+        }
+
+        .soft-card:hover {
+            box-shadow: 0px 12px 35px rgba(100, 100, 111, 0.35);
+            transform: translateY(-5px);
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        /* Style des formulaires */
+        form {
+            background-color: #fff;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #2d3436;
+            display: flex;
+            align-items: center;
+        }
+
+        label i {
+            margin-right: 10px;
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            background-color: #f0f3f7;
+            border: none;
+            border-radius: 15px;
+            padding: 12px;
+            margin-top: 10px;
+            width: 100%;
+            box-shadow: inset 0px 3px 6px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus,
+        select:focus {
+            box-shadow: inset 0px 3px 6px rgba(0, 0, 0, 0.2);
+            outline: none;
+        }
+
+        button[type="submit"] {
+            background-color: #3498db;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 12px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        button[type="submit"] i {
+            margin-right: 10px;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #2980b9;
+        }
+
+        /* Style des informations sur les tâches */
+        .task-info {
+            background-color: #f0f3f7;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .task-info h3 {
+            margin-top: 0;
+            color: #2d3436;
+            font-size: 1.3rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        .task-info h3 i {
+            margin-right: 10px;
+        }
+
+        .task-info p {
+            margin-bottom: 10px;
+            color: #636e72;
+            display: flex;
+            align-items: center;
+        }
+
+        .task-info p i {
+            margin-right: 10px;
+        }
+
+        .task-info .status {
+            font-weight: bold;
+            color: #00b894;
+            display: flex;
+            align-items: center;
+        }
+
+        .task-info .status i {
+            margin-right: 10px;
+        }
+
+        .task-info .status.terminated {
+            color: #d63031;
+        }
+
+        select {
+            display: block;
+        }
+
+        /* Correctif pour les cases à cocher */
+        .permissions label {
+            margin-right: 15px;
+        }
+
+        /* Pour gérer la hauteur égale des sections */
+        .equal-height {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .equal-height > div {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Style pour les boutons d'action */
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .action-buttons .btn {
+            flex: 1 0 calc(50% - 5px);
+            min-width: 120px;
+            padding: 0 10px;
+            height: 36px;
+            line-height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-buttons .btn i {
+            margin-right: 5px;
+        }
+
+        @media (max-width: 600px) {
+            .action-buttons .btn {
+                flex: 1 0 100%;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .action-buttons .btn {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1 class="center-align"><i class="material-icons">dashboard</i> Tableau de Bord</h1>
+    </header>
+
+    <main class="container">
+        <div class="row equal-height">
+            {% if request.user.is_superuser %}
+            <div class="col s12 m6">
+                <div class="soft-card">
+                    <section id="gestion-utilisateurs">
+                        <h2><i class="material-icons">group</i> Tous les Utilisateurs</h2>
+                        <ul>
+                            {% for utilisateur in utilisateurs %}
+                            <li>
+                                <i class="material-icons">person</i> {{ utilisateur.username }}
+                                <form method="POST" action="{% url 'gerer_permissions' %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="utilisateur_id" value="{{ utilisateur.id }}">
+                                    <div class="permissions">
+                                        <label>
+                                            <input type="checkbox" name="peut_ajouter_tache" {% if utilisateur.permission.peut_ajouter_tache %}checked{% endif %}>
+                                            <span><i class="material-icons tiny">add</i> Ajouter</span>
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="peut_modifier_tache" {% if utilisateur.permission.peut_modifier_tache %}checked{% endif %}>
+                                            <span><i class="material-icons tiny">edit</i> Modifier</span>
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="peut_supprimer_tache" {% if utilisateur.permission.peut_supprimer_tache %}checked{% endif %}>
+                                            <span><i class="material-icons tiny">delete</i> Supprimer</span>
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" name="peut_marquer_tache_terminee" {% if utilisateur.permission.peut_marquer_tache_terminee %}checked{% endif %}>
+                                            <span><i class="material-icons tiny">check</i> Terminer</span>
+                                        </label>
+                                        <button type="submit" class="btn waves-effect waves-light">
+                                            <i class="material-icons left">save</i> Sauvegarder
+                                        </button>
+                                    </div>
+                                </form>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </section>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="col s12 m6">
+                <div class="soft-card">
+                    <section id="gestion-taches">
+                        <h2><i class="material-icons">assignment</i> Tâches</h2>
+                        {% if request.user.permission.peut_ajouter_tache %}
+                        <form method="POST" action="{% url 'creer_tache' %}">
+                            {% csrf_token %}
+                            <label for="titre"><i class="material-icons">title</i> Titre:</label>
+                            <input type="text" id="titre" name="titre" required>
+
+                            <label for="description"><i class="material-icons">description</i> Description:</label>
+                            <textarea id="description" name="description" required></textarea>
+
+                            <label for="utilisateurs_assignes"><i class="material-icons">assignment_ind</i> Assigné à:</label>
+                            <select multiple name="utilisateurs_assignes" id="utilisateurs_assignes">
+                                {% for utilisateur in utilisateurs %}
+                                <option value="{{ utilisateur.id }}">{{ utilisateur.username }}</option>
+                                {% endfor %}
+                            </select>
+
+                            <button type="submit" class="btn waves-effect waves-light">
+                                <i class="material-icons left">add_task</i> Créer Tâche
+                            </button>
+                        </form>
+                        {% endif %}
+                    </section>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-grid">
+            {% for tache in taches %}
+            <div class="soft-card task-info">
+                <h3><i class="material-icons">assignment</i> {{ tache.titre }}</h3>
+                <p><i class="material-icons">person</i> <strong>Créateur :</strong> {{ tache.createur.username }}</p>
+                <p><i class="material-icons">description</i> <strong>Description :</strong> {{ tache.description }}</p>
+                <p><i class="material-icons">date_range</i> <strong>Date de création :</strong> {{ tache.date_creation }}</p>
+                <p><i class="material-icons">group</i> <strong>Assigné à :</strong>
+                    {% for utilisateur in tache.utilisateurs.all %}
+                    {{ utilisateur.username }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
+                <p class="status {% if tache.est_terminee %}terminated{% endif %}">
+                    <i class="material-icons">{% if tache.est_terminee %}check_circle{% else %}schedule{% endif %}</i>
+                    {{ tache.est_terminee|yesno:"Terminé,En cours" }}
+                </p>
+                <div class="action-buttons">
+                    {% if request.user.permission.peut_modifier_tache %}
+                    <a href="{% url 'modifier_tache' tache.id %}" class="btn waves-effect waves-light">
+                        <i class="material-icons left">edit</i> Modifier
+                    </a>
+                    {% endif %}
+                    {% if request.user.permission.peut_supprimer_tache %}
+                    <a href="{% url 'supprimer_tache' tache.id %}" class="btn red waves-effect waves-light">
+                        <i class="material-icons left">delete</i> Supprimer
+                    </a>
+                    {% endif %}
+                    {% if not tache.est_terminee and request.user.permission.peut_marquer_tache_terminee %}
+                    <form method="POST" action="{% url 'marquer_tache_terminee' tache.id %}" style="flex: 1 0 calc(50% - 5px); min-width: 120px;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn green waves-effect waves-light" style="width: 100%;">
+                            <i class="material-icons left">check</i> Terminer
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+
+    <!-- Materialize JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var elems = document.querySelectorAll('select');
+            var instances = M.FormSelect.init(elems);
+        });
+    </script>
+</body>
+
+</html>
