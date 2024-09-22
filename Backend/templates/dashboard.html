@@ -257,6 +257,71 @@
                 font-size: 0.8rem;
             }
         }
+        /* Styles pour le chat */
+        .chat-container {
+            display: none;
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 300px;
+            height: 400px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            overflow: hidden;
+            flex-direction: column;
+        }
+    
+        .chat-header {
+            background-color: #3498db;
+            color: white;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+    
+        .chat-input {
+            display: flex;
+            padding: 10px;
+        }
+    
+        .chat-input input {
+            flex-grow: 1;
+            margin-right: 10px;
+        }
+    
+        .message {
+            margin-bottom: 10px;
+            padding: 5px 10px;
+            border-radius: 10px;
+            max-width: 80%;
+        }
+    
+        .message.sent {
+            background-color: #3498db;
+            color: white;
+            align-self: flex-end;
+        }
+    
+        .message.received {
+            background-color: #f0f0f0;
+            align-self: flex-start;
+        }
+    
+        /* Style pour le bouton de chat */
+        .fixed-action-btn {
+            position: fixed;
+            right: 23px;
+            bottom: 23px;
+        }
     </style>
 </head>
 
@@ -379,6 +444,28 @@
             {% endfor %}
         </div>
     </main>
+    <div id="chat-container" class="chat-container">
+        <div class="chat-header">
+            <h3>Chat</h3>
+            <button id="close-chat" class="btn-flat">
+                <i class="material-icons">close</i>
+            </button>
+        </div>
+        <div id="chat-messages" class="chat-messages"></div>
+        <div class="chat-input">
+            <input type="text" id="message-input" placeholder="Tapez votre message...">
+            <button id="send-message" class="btn waves-effect waves-light">
+                <i class="material-icons">send</i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Bouton de chat flottant -->
+    <div class="fixed-action-btn">
+        <a id="open-chat" class="btn-floating btn-large blue">
+            <i class="large material-icons">chat</i>
+        </a>
+    </div>
 
     <!-- Materialize JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
@@ -386,6 +473,60 @@
         document.addEventListener('DOMContentLoaded', function() {
             var elems = document.querySelectorAll('select');
             var instances = M.FormSelect.init(elems);
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var elems = document.querySelectorAll('select');
+            var instances = M.FormSelect.init(elems);
+            
+            // Initialisation du bouton flottant
+            var elemsFAB = document.querySelectorAll('.fixed-action-btn');
+            var instancesFAB = M.FloatingActionButton.init(elemsFAB);
+    
+            // Fonctionnalité de chat
+            const chatContainer = document.getElementById('chat-container');
+            const openChatBtn = document.getElementById('open-chat');
+            const closeChatBtn = document.getElementById('close-chat');
+            const messageInput = document.getElementById('message-input');
+            const sendMessageBtn = document.getElementById('send-message');
+            const chatMessages = document.getElementById('chat-messages');
+    
+            openChatBtn.addEventListener('click', () => {
+                chatContainer.style.display = 'flex';
+            });
+    
+            closeChatBtn.addEventListener('click', () => {
+                chatContainer.style.display = 'none';
+            });
+    
+            sendMessageBtn.addEventListener('click', sendMessage);
+            messageInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+    
+            function sendMessage() {
+                const message = messageInput.value.trim();
+                if (message) {
+                    addMessageToChat('sent', message);
+                    messageInput.value = '';
+                    // Ici, vous enverriez normalement le message au serveur
+                    // Simulons une réponse après 1 seconde
+                    setTimeout(() => {
+                        addMessageToChat('received', "Merci pour votre message. Un administrateur vous répondra bientôt.");
+                    }, 1000);
+                }
+            }
+    
+            function addMessageToChat(type, text) {
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message', type);
+                messageElement.textContent = text;
+                chatMessages.appendChild(messageElement);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
         });
     </script>
 </body>

@@ -17,7 +17,7 @@
                     <router-link v-if="!authStore.isAuthenticated" to="/login" class="btn btn-outline-light btn-lg">Se connecter</router-link>
                     <p v-if="authStore.isAuthenticated" class="welcome-msg text-white">Bienvenue {{ authStore.user?.username }} !</p>
                     <div v-if="authStore.isAuthenticated">
-                        <a href="http://localhost:8000/dashboard/" style="text-decoration: none; color :green ">Commencer</a>
+                        <a href="http://localhost:8000/dashboard/" style="text-decoration: none; color :black ">Commencer</a>
                     </div>
                 </div>
             </div>
