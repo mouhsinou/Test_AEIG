@@ -122,7 +122,7 @@ export default {
 
 .hero-section {
     flex: 1;
-    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    background: linear-gradient(rgba(16, 36, 214, 0.6), rgba(0, 0, 0, 0.6)),
                 url('@/assets/OIP.jpeg') no-repeat center center;
     background-size: cover;
     color: #ffffff;
